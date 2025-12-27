@@ -9,6 +9,9 @@ const inter = Inter({
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
+      <head>
+        <meta name="darkreader-lock" />
+      </head>
       <body className="flex flex-col min-h-screen">
         <RootProvider>{children}</RootProvider>
       </body>
