@@ -82,20 +82,24 @@ TODO
     volumes:
       meilisearch_data:
 
+5. Create a `.env` file:
+    ```bash
+    echo "MEILI_MASTER_KEY=$(openssl rand -hex 32)" > .env
+    ```
       
-5. Run this once:
+6. Run this once:
     ```bash
     docker network create distribute
     ```
 
-6. Start Distributor using Docker Compose:
+7. Start Distributor using Docker Compose:
     ```bash
     docker compose up -d
     ```
 
-7. The server is now running on `[::]:8585`, set up a reverse proxy with HTTPS using Nginx and Let's Encrypt for secure access. (Nginx Proxy Manager is recommended)
+8. The server is now running on `[::]:8585`, set up a reverse proxy with HTTPS using Nginx and Let's Encrypt for secure access. (Nginx Proxy Manager is recommended)
 
   
-8. Access Distributor admin panel by navigating to `https://your-server-ip` in your web browser.
+9. Access Distributor admin panel by navigating to `https://your-server-ip` in your web browser. Set up an admin account there before using Distribute App.
 
 Congratulations! You have successfully installed DistributeApp and Distributor. You can now start syncing and managing your music files across your devices.
