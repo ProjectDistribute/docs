@@ -30,11 +30,7 @@ Distributor is the server component that works alongside DistributeApp to manage
 - Electricity ⚡️
 
 ### Option 1: Using the Installer Script
-1. Run the following command in your terminal:
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/ProjectDistribute/distributor/main/install.sh | bash
-   ```
-2. Follow the prompts to complete the installation.
+TODO
 
 ### Option 2: Manual Installation
 1. Download [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) if you haven't already.
@@ -51,36 +47,55 @@ Distributor is the server component that works alongside DistributeApp to manage
     ```yaml
     services:
       distributor:
-        build: .
+        restart: unless-stopped
         ports:
           - "8585:8585"
         volumes:
-          - ./data:/app/data
+          - ./data:/app/storage # You can specify your HDD here
+          - ./data/db:/app/data/db # Preferably SSD
         image: distributor
         environment:
-          # Requst mails settings
-          - MAIL_CATEGORIES=cd,digital
-
-          # Listening address
           - LISTEN_ON=0.0.0.0:8585
+          - MEILI_URL=http://meilisearch:7700
+          - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+        depends_on:
+          - meilisearch
 
-          # Customization
-          - REQUEST_MAIL_ANNOUNCEMENT=test
+      meilisearch:
+        image: getmeili/meilisearch:v1.31
+        container_name: distributor_meili
+        restart: unless-stopped
+        ports:
+          - "127.0.0.1:7700:7700"
+        environment:
+          - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+        volumes:
+          - meilisearch_data:/meili_data
+        networks:
+          - distribute
 
-          # Set this if you want to enable admin features. 
-          # NOTE: If you change the username, previous admin user will remain admin.
-          - ADMIN_USERNAME=sourcelocation
-    ```
+    networks:
+      distribute:
+        name: distribute
+        external: true
 
-5. Start Distributor using Docker Compose:
+    volumes:
+      meilisearch_data:
+
+      
+5. Run this once:
     ```bash
-    docker-compose up -d
+    docker network create distribute
     ```
 
+6. Start Distributor using Docker Compose:
+    ```bash
+    docker compose up -d
+    ```
 
-6. (Unimplemented) Set up a reverse proxy with HTTPS using Nginx and Let's Encrypt for secure access. (Nginx Proxy Manager is recommended)
+7. The server is now running on `[::]:8585`, set up a reverse proxy with HTTPS using Nginx and Let's Encrypt for secure access. (Nginx Proxy Manager is recommended)
 
   
-7. (Unimplemented) Access Distributor by navigating to `https://your-server-ip:8585` in your web browser.
+8. Access Distributor admin panel by navigating to `https://your-server-ip` in your web browser.
 
 Congratulations! You have successfully installed DistributeApp and Distributor. You can now start syncing and managing your music files across your devices.
